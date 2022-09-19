@@ -36,7 +36,6 @@ export default class Calculator extends Component{
         if(this.state.current === 0){
             this.setState({operation, current: 1, clearDisplay:true})
         }else{
-            const equals = operation === '='
             const currentOperation = this.state.operation
             const values = [...this.state.values]
             
