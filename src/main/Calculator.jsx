@@ -7,31 +7,54 @@ import Display from "../components/Display"
 /*exportando o componente calculadora
 e criando a classe render para renderizar a calculadora (a classe render precisa de um return no fim)
 */
-
 const initialState = {
-    displayValue: 0,
-    displayFalse : false,
+    displayValue: '0',
+    clearDisplay: false,
     operation: null,
-    values: [0,0],
+    values: [0, 0],
     current: 0
 }
 
 export default class Calculator extends Component{
+
+    
+    state = {...initialState}
+    
+    constructor(props){
+        super (props)
+
+        this.clearMemory = this.clearMemory.bind(this)
+        this.setOperation = this.setOperation.bind(this)
+        this.addDigit = this.addDigit.bind(this)
+    }
+
+    
     
 
-    state = {...initialState}
-
-    constructor(props){
-        super(props)
-        this.clearMemory = this.clearMemory.bind()
-        this.setOperation = this.setOperation.bind()
-        this.addDigit = this.addDigit.bind()
-
-    }
 
     clearMemory(){
         this.setState({...initialState})
+
     }
+
+    addDigit(n){
+        if (n === '.' && this.state.displayValue.includes('.')) {
+            return
+        }
+        const clearDisplay = this.state.displayValue === "0" || this.state.clearDisplay
+        const currentValue = clearDisplay ? '' : this.state.displayValue
+        const displayValue = currentValue + n
+        this.setState({displayValue, clearDisplay:false})
+
+        if(n !== '.'){
+            const  i = this.state.current
+            const newValue = parseFloat(displayValue)
+            const values = [...this.state.values]
+            values[i] = newValue
+            this.setState({values})
+        }
+    }
+
     setOperation(operation){
         if(this.state.current === 0){
             this.setState({operation, current: 1, clearDisplay:true})
@@ -44,7 +67,7 @@ export default class Calculator extends Component{
                     values[0] = values[0] + values[1]
                     break
                 case '-':
-                    values[0] = values[0] + values[1]
+                    values[0] = values[0] - values[1]
                     break
                 case '/':
                     values[0] = values / values[1]
@@ -57,32 +80,15 @@ export default class Calculator extends Component{
 
         }
     }
-    addDigit(n){
-        if (n === '.' && this.state.displayValue.includes('.')) {
-            return
-        }
-        const clearDisplay = this.state.displayValue === '0'
-        || this.state.clearDisplay
-        const currentValue = clearDisplay ? '' : this.state.displayValue
-        const displayValue = currentValue + n
-        this.setState({displayValue, clearDisplay:false})
-
-        if(n !== '.'){
-            const  i = this.state.current
-            const newValue = parseFloat(displayValue)
-            const values = [...this.state.values]
-            values[i] = newValue
-            this.setState({values})
-            console.log(values)
-        }
-    }
 
     render(){
         return(
 /*isso nao é html, é jsx que sera transpilado para js puro */
     <div className="calculator">
         <Display value={this.state.displayValue}/>
-        <Button label="AC" click={this.clearMemory} triple/>
+        <Button 
+        label="AC" 
+        click={this.clearMemory} triple/>
         <Button label="/" click={this.setOperation} operation/>
         <Button label="7" click={this.addDigit}/>
         <Button label="8" click={this.addDigit}/>
